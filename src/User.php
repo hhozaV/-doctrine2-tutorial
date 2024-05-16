@@ -8,15 +8,19 @@ use Doctrine\Common\Collections\ArrayCollection;
 #[ORM\Table(name: 'users')]
 class User
 {
-    /** @var int */
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
     private int|null $id = null;
 
-    /** @var string */
     #[ORM\Column(type: 'string')]
     private string $name;
+
+    #[ORM\OneToMany(targetEntity: Bug::class, mappedBy: 'reporter')]
+    private $reportedBugs;
+
+    #[ORM\OneToMany(targetEntity: Bug::class, mappedBy: 'engineer')]
+    private $assignedBugs;
 
     public function getId(): int|null
     {
@@ -33,9 +37,6 @@ class User
         $this->name = $name;
     }
 
-    private $reportedBugs = null;
-    private $assignedBugs = null;
-
     public function __construct()
     {
         $this->reportedBugs = new ArrayCollection();
@@ -46,7 +47,7 @@ class User
     {
         $this->reportedBugs[] = $bug;
     }
-    
+
     public function assignedToBug(Bug $bug): void
     {
         $this->assignedBugs[] = $bug;
